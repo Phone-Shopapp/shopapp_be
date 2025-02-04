@@ -4,6 +4,7 @@ import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.project.shopapp.models.*;
 
@@ -12,10 +13,14 @@ public interface IProductService {
     Product getProductById(long id) throws Exception;
     Page<Product> getAllProducts(PageRequest pageRequest);
     Product updateProduct(long id, ProductDTO productDTO) throws Exception;
-    void deleteProduct(long id);
+    ResponseEntity<?> deleteProduct(long id);
     boolean existsByName(String name);
     ProductImage createProductImage(
             Long productId,
             ProductImageDTO productImageDTO) throws Exception;
+
+    Product existedById(
+            Long productId
+    ) throws Exception;
 
 }

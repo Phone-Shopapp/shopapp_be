@@ -23,6 +23,7 @@ public class ProductDTO {
 
     private String thumbnail;
 
+    @NotBlank(message = "Description is required")
     private String description;
 
     @JsonProperty("category_id")

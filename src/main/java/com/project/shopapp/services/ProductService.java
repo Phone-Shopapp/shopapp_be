@@ -13,6 +13,7 @@ import com.project.shopapp.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,10 +32,13 @@ public class ProductService implements IProductService{
                         new DataNotFoundException(
                                 "Cannot find category with id: "+productDTO.getCategoryId()));
 
+
+
         Product newProduct = Product.builder()
                 .name(productDTO.getName())
                 .price(productDTO.getPrice())
                 .thumbnail(productDTO.getThumbnail())
+                .description(productDTO.getDescription())
                 .category(existingCategory)
                 .build();
         return productRepository.save(newProduct);
@@ -80,9 +84,14 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public void deleteProduct(long id) {
+    public ResponseEntity<?> deleteProduct(long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isEmpty()) {
+            return ResponseEntity.badRequest().body("Empty Product");
+        }
+
         optionalProduct.ifPresent(productRepository::delete);
+        return ResponseEntity.ok("Delete successfully");
     }
 
     @Override
@@ -94,7 +103,7 @@ public class ProductService implements IProductService{
             Long productId,
             ProductImageDTO productImageDTO) throws Exception {
         Product existingProduct = productRepository
-                .findById(productImageDTO.getProductId())
+                .findById(productId)
                 .orElseThrow(() ->
                         new DataNotFoundException(
                                 "Cannot find product with id: "+productImageDTO.getProductId()));
@@ -103,10 +112,27 @@ public class ProductService implements IProductService{
                 .imageUrl(productImageDTO.getImageUrl())
                 .build();
         //Ko cho insert quá 5 ảnh cho 1 sản phẩm
-        int size = productImageRepository.findByProductId(productId).size();
-        if(size >= 5) {
-            throw new InvalidParamException("Number of images must be <= 5");
+        int imgs = productImageRepository.findByProductId(productId).size();
+        if(imgs >= ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+            throw new InvalidParamException(
+                    "Number of images must be <= 5");
         }
         return productImageRepository.save(newProductImage);
+    }
+
+    @Override
+    public Product existedById(Long productId) throws Exception {
+        Optional<Product> product = productRepository.findById(Long.valueOf(productId));
+        if (product.isEmpty()) {
+            throw new DataNotFoundException("Item not found");
+        }
+        Product response = Product.builder()
+                .description(product.get().getDescription())
+                .thumbnail(product.get().getThumbnail())
+                .name(product.get().getName())
+                .price(product.get().getPrice())
+                .build();
+
+        return response;
     }
 }
