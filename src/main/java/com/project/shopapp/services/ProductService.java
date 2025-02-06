@@ -1,5 +1,6 @@
 package com.project.shopapp.services;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
@@ -10,12 +11,15 @@ import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.repositories.CategoryRepository;
 import com.project.shopapp.repositories.ProductImageRepository;
 import com.project.shopapp.repositories.ProductRepository;
+import com.project.shopapp.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -31,7 +35,6 @@ public class ProductService implements IProductService{
                 .orElseThrow(() ->
                         new DataNotFoundException(
                                 "Cannot find category with id: "+productDTO.getCategoryId()));
-
 
 
         Product newProduct = Product.builder()
@@ -52,9 +55,11 @@ public class ProductService implements IProductService{
     }
 
     @Override
-    public Page<Product> getAllProducts(PageRequest pageRequest) {
-        // Lấy danh sách sản phẩm theo trang(page) và giới hạn(limit)
-        return productRepository.findAll(pageRequest);
+    public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
+
+        return productRepository.findAll(pageRequest).map(
+                ProductResponse::fromProduct //tham chieu den static trong ham.
+        );
     }
 
     @Override
