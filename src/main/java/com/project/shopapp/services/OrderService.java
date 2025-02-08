@@ -17,6 +17,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,22 +56,49 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order getOrder(Long id) {
-        return null;
+    public Order getOrder(Long id) throws DataNotFoundException {
+        return orderRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new DataNotFoundException("Không tìm thấy sản phẩm"));
     }
 
     @Override
     public Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException {
-        return null;
+        Order existingOrder = orderRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new DataNotFoundException("Không tìm thấy sản phẩm"));
+
+        User existingUser = userRepository
+                .findById(orderDTO.getUserId())
+                .orElseThrow(() ->
+                        new DataNotFoundException("Không tìm thấy người dùng"));
+
+        modelMappper.map(orderDTO, existingOrder);
+        existingOrder.setUser(existingUser);
+        return orderRepository.save(existingOrder);
     }
 
     @Override
     public void deleteOrder(Long id) {
+        Order optionalOrder =
+                orderRepository.findById(id).orElse(null);
+
+        if (optionalOrder != null) {
+            optionalOrder.setActive(false);
+            orderRepository.save(optionalOrder);
+        }
 
     }
 
     @Override
     public List<Order> findByUserId(Long userId) {
         return List.of();
+    }
+
+    @Override
+    public List<Order> getOrders(Long userId) {
+        return orderRepository.findByUserId(userId);
     }
 }

@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface IOrderService {
     Order createOrder(OrderDTO orderDTO) throws Exception;
-    Order getOrder(Long id);
+    Order getOrder(Long id) throws DataNotFoundException;
     Order updateOrder(Long id, OrderDTO orderDTO) throws DataNotFoundException;
-    void deleteOrder(Long id);
+    void deleteOrder(Long id) throws DataNotFoundException;
     List<Order> findByUserId(Long userId);
+    List<Order> getOrders(Long userId);
 }
