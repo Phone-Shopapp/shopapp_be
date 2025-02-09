@@ -1,6 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.response.ApiResponse;
 import com.project.shopapp.services.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Password does not match");
             }
             userService.createUser(userDTO);
-            return ResponseEntity.ok("Register successfully");
+            return ResponseEntity.ok(userDTO);
         }  catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
