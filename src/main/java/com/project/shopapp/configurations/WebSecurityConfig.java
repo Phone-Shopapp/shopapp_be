@@ -55,7 +55,8 @@ public class WebSecurityConfig {
                         // Permit access to register and login endpoints
                         .requestMatchers(
                                 String.format("%s/users/register", prefix),
-                                String.format("%s/users/login", prefix)
+                                String.format("%s/users/login", prefix),
+                                String.format("%s/categories/**", prefix)
                         ).permitAll()
 
                         .requestMatchers(POST, String.format("%s/orders/**", prefix))

@@ -3,9 +3,11 @@ package com.project.shopapp.services;
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
 import com.project.shopapp.repositories.CategoryRepository;
+import com.project.shopapp.responses.CategoryResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -28,10 +30,19 @@ public class CategoryService implements ICategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
     }
 
-    @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+
+    public Page<CategoryResponse> getAllCategories(PageRequest pageRequest) {
+        return categoryRepository.findAll(pageRequest).map(
+            category -> CategoryResponse.builder()
+                    .category(category)
+                    .build()
+        );
     }
+
+//    @Override
+//    public List<Category> getAllCategories() {
+//        return categoryRepository.findAll();
+//    }
 
     @Override
     public Category updateCategory(long categoryId,

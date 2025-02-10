@@ -1,6 +1,6 @@
 package com.project.shopapp.filters;
 
-import com.project.shopapp.components.JwtTokenUtil;
+import com.project.shopapp.components.JwtTokenUtils;
 import com.project.shopapp.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private String apiPrefix;
 
     private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -53,11 +52,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             final String token = authorizationHeader.substring(7);
-            final String username = jwtTokenUtil.extractUsername(token);
+            final String username = jwtTokenUtils.extractUsername(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetails = (User) userDetailsService.loadUserByUsername(username);
-                if (jwtTokenUtil.isTokenValid(token, userDetails)) {
+                if (jwtTokenUtils.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

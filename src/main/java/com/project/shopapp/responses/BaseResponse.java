@@ -1,12 +1,9 @@
-package com.project.shopapp.response;
+package com.project.shopapp.responses;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import lombok.*;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Data//toString

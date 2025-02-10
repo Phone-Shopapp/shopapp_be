@@ -5,9 +5,10 @@ import com.project.shopapp.dtos.*;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.repositories.ProductRepository;
-import com.project.shopapp.response.ProductListResponse;
-import com.project.shopapp.response.ProductResponse;
+import com.project.shopapp.responses.ProductListResponse;
+import com.project.shopapp.responses.ProductResponse;
 import com.project.shopapp.services.IProductService;
+import com.project.shopapp.utils.LocalizationUtils;
 import com.project.shopapp.utils.product.EmptyFileUtil;
 import com.project.shopapp.utils.product.EmptyFilesUtil;
 import com.project.shopapp.utils.product.ImageUtil;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +36,8 @@ public class ProductController {
     private final EmptyFileUtil emptyFileUtil;
     private final EmptyFilesUtil emptyFilesUtil;
     private final ImageUtil imageUtil;
+    private final LocalizationUtils localizationUtils;
+
 //    private final ProductResponse productResponse;
     @PostMapping("")
     //POST http://localhost:8088/v1/api/products

@@ -1,4 +1,4 @@
-package com.project.shopapp.response;
+package com.project.shopapp.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
