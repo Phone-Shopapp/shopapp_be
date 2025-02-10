@@ -5,6 +5,7 @@ import com.project.shopapp.exceptions.DataNotFoundException;
 import com.project.shopapp.models.Order;
 import com.project.shopapp.services.OrderService;
 import com.project.shopapp.utils.LocalizationUtils;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class OrderController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Order order = orderService.createOrder(orderDTO);
-            return ResponseEntity.ok("Tạo đơn hàng thành công: " + order);
+            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -65,13 +66,18 @@ public class OrderController {
     public ResponseEntity<?> updateOrder(
             @Valid @PathVariable long id,
             @Valid @RequestBody OrderDTO orderDTO) throws DataNotFoundException {
-        Order order = orderService.updateOrder(id, orderDTO);
-        return ResponseEntity.ok("Cập nhật thông tin 1 order" + order.getId());
+        try {
+            Order order = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(localizationUtils.getLocalizeMessage(MessageKeys.UPDATE_ORDER_FAILED, e.getMessage()));
+        }
+
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@Valid @PathVariable Long id) throws DataNotFoundException {
         //xóa mềm => cập nhật trường active = false
         orderService.deleteOrder(id);
-        return ResponseEntity.ok("Xóa đơn hàng thành công.");
+        return ResponseEntity.ok(localizationUtils.getLocalizeMessage(MessageKeys.DELETE_ORDER_SUCCESSFULLY));
     }
 }

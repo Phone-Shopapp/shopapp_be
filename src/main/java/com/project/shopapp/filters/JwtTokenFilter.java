@@ -66,17 +66,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
             return;
         }
 
-        // Luôn gọi filterChain.doFilter để tiếp tục chuỗi filter
-        filterChain.doFilter(request, response);
     }
 
     private boolean isBypass(@NonNull HttpServletRequest request) {
         final List<Map.Entry<String, String>> bypassToken = Arrays.asList(
+                new AbstractMap.SimpleEntry<>(String.format("%s/roles", apiPrefix), "GET"),
                 new AbstractMap.SimpleEntry<>(String.format("%s/products", apiPrefix), "GET"),
                 new AbstractMap.SimpleEntry<>(String.format("%s/categories", apiPrefix), "GET"),
                 new AbstractMap.SimpleEntry<>(String.format("%s/users/register", apiPrefix), "POST"),

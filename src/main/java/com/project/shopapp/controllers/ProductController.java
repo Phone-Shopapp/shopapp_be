@@ -2,8 +2,10 @@ package com.project.shopapp.controllers;
 
 import com.github.javafaker.Faker;
 import com.project.shopapp.dtos.*;
+import com.project.shopapp.exceptions.InvalidParamException;
 import com.project.shopapp.models.Product;
 import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.repositories.ProductImageRepository;
 import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.responses.ProductListResponse;
 import com.project.shopapp.responses.ProductResponse;
@@ -13,6 +15,7 @@ import com.project.shopapp.utils.product.EmptyFileUtil;
 import com.project.shopapp.utils.product.EmptyFilesUtil;
 import com.project.shopapp.utils.product.ImageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +41,7 @@ public class ProductController {
     private final EmptyFilesUtil emptyFilesUtil;
     private final ImageUtil imageUtil;
     private final LocalizationUtils localizationUtils;
+    private final ProductImageRepository productImageRepository;
 
 //    private final ProductResponse productResponse;
     @PostMapping("")
@@ -70,6 +75,7 @@ public class ProductController {
             emptyFilesUtil.checkFile(files);
             Product existingProduct = productService.getProductById(productId);
             List<ProductImage> productImages = new ArrayList<>();
+
             for (MultipartFile file : files) {
                 ResponseEntity<?> checkFileRes = emptyFileUtil.checkFile(file);
                 if (checkFileRes != null) {
@@ -88,6 +94,24 @@ public class ProductController {
             return ResponseEntity.ok().body(productImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/images/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/"+imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

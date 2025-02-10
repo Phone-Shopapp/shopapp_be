@@ -54,13 +54,23 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Permit access to register and login endpoints
                         .requestMatchers(
+                                String.format("%s/roles", prefix),
                                 String.format("%s/users/register", prefix),
                                 String.format("%s/users/login", prefix),
                                 String.format("%s/categories/**", prefix)
                         ).permitAll()
 
-                        .requestMatchers(POST, String.format("%s/orders/**", prefix))
-                        .hasRole(Role.USER)
+                        /* PRODUCT*/
+                        .requestMatchers(GET,
+                                String.format("%s/products/images/*", prefix)).permitAll()
+
+                        .requestMatchers(POST,
+                                String.format("%s/products/**", prefix)).permitAll()
+
+
+
+                        .requestMatchers(POST,
+                                String.format("%s/orders/**", prefix)).hasRole(Role.USER)
 
                         .anyRequest().authenticated()
                 );
